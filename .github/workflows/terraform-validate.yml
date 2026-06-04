@@ -1,0 +1,37 @@
+name: Terraform Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive .
+        continue-on-error: true
+
+      - name: Validate Dev
+        working-directory: ./environments/dev
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Staging
+        working-directory: ./environments/staging
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Prod
+        working-directory: ./environments/prod
+        run: |
+          terraform init -backend=false
+          terraform validate

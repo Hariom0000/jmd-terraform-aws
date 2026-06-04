@@ -1,0 +1,41 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'environments/**'
+      - 'modules/**'
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION || 'us-east-1' }}
+
+      - name: Apply Dev
+        working-directory: ./environments/dev
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Apply Staging
+        working-directory: ./environments/staging
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Plan Prod (Manual Approval Required)
+        working-directory: ./environments/prod
+        run: |
+          terraform init
+          terraform plan
