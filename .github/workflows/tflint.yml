@@ -1,0 +1,33 @@
+name: TFLint
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'modules/**'
+      - 'environments/**'
+      - '.github/workflows/tflint.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'modules/**'
+      - 'environments/**'
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint --format compact --recursive .
