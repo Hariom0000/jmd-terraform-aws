@@ -1,6 +1,7 @@
 name: Terraform Plan
 
 on:
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
   pull_request:
     paths:
       - 'environments/**'
@@ -10,7 +11,7 @@ permissions:
   contents: read
   pull-requests: write
   actions: read
-  id-token: write # Recommended if you switch to OIDC/IAM Roles later
+  id-token: write
 
 jobs:
   terraform-plan:
