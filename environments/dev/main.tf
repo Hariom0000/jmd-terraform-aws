@@ -46,3 +46,14 @@ module "security_groups" {
 
   depends_on = [module.vpc]
 }
+
+# S3 Static Website Module
+module "s3_static_site" {
+  source = "../../modules/s3"
+
+  bucket_name          = var.s3_bucket_name
+  environment          = var.environment
+  versioning_enabled   = var.s3_bucket_versioning
+  encryption_algorithm = var.s3_server_side_encryption
+  tags                 = var.tags
+}

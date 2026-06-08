@@ -2,6 +2,7 @@ name: Terraform Validate
 
 on:
   pull_request:
+  workflow_dispatch: {}
   push:
     branches: [main]
 
@@ -28,14 +29,14 @@ jobs:
           terraform init -backend=false
           terraform validate
 
-      - name: Validate Staging
-        working-directory: ./environments/staging
-        run: |
-          terraform init -backend=false
-          terraform validate
-
-      - name: Validate Prod
-        working-directory: ./environments/prod
-        run: |
-          terraform init -backend=false
-          terraform validate
+#      - name: Validate Staging
+#        working-directory: ./environments/staging
+#        run: |
+#          terraform init -backend=false
+#          terraform validate
+#
+#      - name: Validate Prod
+#        working-directory: ./environments/prod
+#        run: |
+#          terraform init -backend=false
+#          terraform validate

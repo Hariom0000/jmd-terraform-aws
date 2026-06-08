@@ -107,6 +107,11 @@ variable "rds_backup_retention" {
   type    = number
 }
 
+variable "s3_bucket_name" {
+  description = "Unique name for the static website S3 bucket"
+  type        = string
+}
+
 variable "s3_bucket_versioning" {
   default = true
   type    = bool

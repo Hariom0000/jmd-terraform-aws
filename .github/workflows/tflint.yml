@@ -9,6 +9,7 @@ on:
       - 'modules/**'
       - 'environments/**'
       - '.github/workflows/tflint.yml'
+  workflow_dispatch: {}
   pull_request:
     branches:
       - main

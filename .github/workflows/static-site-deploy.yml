@@ -1,0 +1,67 @@
+name: Static Site Deploy
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - 'website/**' # Assumes your site files are here
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION || 'us-east-1' }}
+
+      # If using React/Vue, add build steps here:
+      # - name: Install Dependencies
+      #   run: npm install
+      # - name: Build
+      #   run: npm run build
+
+      - name: Verify Deployment Prerequisites
+        env:
+          BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+        run: |
+          if [ -z "$BUCKET_NAME" ]; then
+            echo "Error: S3_BUCKET_NAME secret is not set."
+            exit 1
+          fi
+          
+          if [ ! -d "./website" ]; then
+            echo "Error: The './website' directory does not exist in the root of the repository."
+            echo "Please create the directory and add your index.html file."
+            exit 1
+          fi
+
+          if ! aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
+            echo "Error: Bucket '$BUCKET_NAME' does not exist yet. Please run Terraform Apply first."
+            exit 1
+          fi
+
+      - name: Deploy to S3
+        env:
+          BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+        run: |
+          aws s3 sync ./website s3://$BUCKET_NAME --delete
+
+      - name: Invalidate CloudFront Cache
+        # success() is implicit in if conditions; simplified check is more robust for IDE linters
+        if: github.event_name != 'pull_request' && secrets.CLOUDFRONT_DISTRIBUTION_ID != ''
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
+            --paths "/*"

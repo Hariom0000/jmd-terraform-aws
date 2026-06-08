@@ -33,14 +33,14 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      - name: Apply Staging
-        working-directory: ./environments/staging
-        run: |
-          terraform init
-          terraform apply -auto-approve
-
-      - name: Plan Prod (Manual Approval Required)
-        working-directory: ./environments/prod
-        run: |
-          terraform init
-          terraform plan
+#      - name: Apply Staging
+#        working-directory: ./environments/staging
+#        run: |
+#          terraform init
+#          terraform apply -auto-approve
+#
+#      - name: Plan Prod (Manual Approval Required)
+#        working-directory: ./environments/prod
+#        run: |
+#          terraform init
+#          terraform plan
