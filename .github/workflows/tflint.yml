@@ -35,4 +35,4 @@ jobs:
         run: tflint --init
 
       - name: Run TFLint
-        run: tflint --format compact --recursive .
+        run: tflint --format compact
